@@ -49,29 +49,35 @@ def index1(request):
     return render(request, 'index.html')
 
 def index(request):
-    ticker_path = os.path.join(BASE_DIR, "app", "Data", "new_tickers.csv")
-    ticker_df = pd.read_csv(ticker_path)
-    ticker_list = ticker_df.to_dict('records')
+    ticker = 'BTC-USD'
+    try:
+        btc_data = yf.download(ticker, period='1d', interval='1m')
 
-    btc_data = yf.download("BTC-CAD", period="1mo", interval="1d")
+        if btc_data.empty:
+            context = {
+                'error': 'Unable to fetch live BTC data at the moment. Please try again later.',
+                'current_price': 'N/A',
+                'last_updated': 'N/A'
+            }
+        else:
+            current_price = btc_data['Close'].iloc[-1]
+            last_updated = btc_data.index[-1].strftime('%Y-%m-%d %H:%M:%S')
 
-    fig = go.Figure()
+            context = {
+                'current_price': f"${current_price:.2f}",
+                'last_updated': last_updated,
+            }
 
-    current_price = None
-    if not btc_data.empty and 'Close' in btc_data.columns:
-        fig.add_trace(go.Scatter(x=btc_data.index, y=btc_data['Close'], name="BTC-CAD"))
-        current_price = btc_data['Close'].iloc[-1]
-    else:
-        fig.add_annotation(text="BTC-CAD data not available",
-                           xref="paper", yref="paper",
-                           x=0.5, y=0.5, showarrow=False,
-                           font=dict(size=18))
+    except Exception as e:
+        print("Error in index view:", e)
+        context = {
+            'error': 'Something went wrong while fetching data.',
+            'current_price': 'N/A',
+            'last_updated': 'N/A'
+        }
 
-    return render(request, 'index.html', {
-        'ticker_list': ticker_list,
-        'plot': fig.to_html(),
-        'current_price': current_price
-    })
+    return render(request, 'index.html', context)
+
 
 
 def search(request):
