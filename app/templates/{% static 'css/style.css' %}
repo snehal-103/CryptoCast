@@ -1,0 +1,183 @@
+/* Accuracy Display Container */
+.accuracy-display {
+    border: 1px solid #3E54D3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.accuracy-display:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Header Section */
+.accuracy-display h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.accuracy-display h3 i {
+    color: #4F80E2;
+}
+
+/* Badge Styling */
+.accuracy-display .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Metrics Section */
+.accuracy-metrics {
+    background-color: rgba(31, 41, 55, 0.6);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #4F80E2;
+}
+
+.metric-item {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metric-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.metric-item i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Text Styling */
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+.text-success {
+    color: #10B981 !important;
+}
+
+.text-warning {
+    color: #F59E0B !important;
+}
+
+.text-danger {
+    color: #EF4444 !important;
+}
+
+.text-primary {
+    color: #3B82F6 !important;
+}
+
+/* Note Section */
+.accuracy-note {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    border-left: 3px solid #4F80E2;
+}
+
+.accuracy-note i {
+    color: #4F80E2;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .accuracy-display {
+        padding: 1.5rem;
+    }
+    
+    .accuracy-display h3 {
+        font-size: 1.1rem;
+    }
+    
+    .metric-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .metric-item span:first-child {
+        margin-bottom: 0.25rem;
+    }
+}
+/* Accuracy Display Styling */
+.accuracy-display {
+    border: 1px solid #3E54D3;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Color Coding */
+.text-primary {
+    color: #3E54D3 !important; /* Blue for high confidence */
+}
+
+.text-warning {
+    color: #FFC107 !important; /* Yellow for medium confidence */
+}
+
+
+.text-danger {
+    color: #F44336 !important; /* Red for low confidence */
+}
+
+.bg-primary {
+    background-color: #3E54D3 !important;
+}
+
+.bg-warning {
+    background-color: #FFC107 !important;
+}
+
+.bg-danger {
+    background-color: #F44336 !important;
+}
+
+/* Metric Items */
+.metric-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.metric-item:last-child {
+    border-bottom: none;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+.high-confidence {
+    color: #3E54D3; /* Blue */
+    font-weight: bold;
+}
+.medium-confidence {
+    color: #FFC107; /* Yellow */
+    font-weight: bold;
+}
+.low-confidence {
+    color: #F44336; /* Red */
+    font-weight: bold;
+}
+
+.risk-advice {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.risk-advice .positive {
+    bg-color: #28a745; /* green */
+}
+
+.risk-advice .caution {
+    bg-color: #FFA500; /* orange */
+}
+
+.risk-advice .negative {
+    bg-color: #dc3545; /* red */
+}

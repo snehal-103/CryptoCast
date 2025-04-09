@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #1e1e2f;
+            color: #ffffff;
+            transition: margin-left 0.3s ease;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100%;
+            background-color: #2c2f4a;
+            padding: 20px;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        .sidebar-collapsed {
+            transform: translateX(-240px);
+        }
+        .sidebar h2 {
+            color: #00bcd4;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: block;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover {
+            background-color: #3e4163;
+            padding-left: 20px;
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+        .main-content-expanded {
+            margin-left: 40px;
+        }
+        .card {
+            background-color: #2c2f4a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #00bcd4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #555;
+            text-align: left;
+        }
+        th {
+            background-color: #3e4163;
+        }
+        .toggle-sidebar {
+            position: fixed;
+            left: 250px;
+            top: 20px;
+            background: #2c2f4a;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        .toggle-sidebar:hover {
+            background: #3e4163;
+        }
+        .toggle-sidebar-collapsed {
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+    
+    <div class="sidebar" id="sidebar">
+        <h2>Admin</h2>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <h1>Welcome, {{ request.user.username }}</h1>
+
+        <div class="card">
+            <h3>Model Accuracy</h3>
+            <p>SVM Accuracy: <strong>{{ svm_accuracy }}%</strong></p>
+            <p>Linear Regression Accuracy: <strong>{{ lr_accuracy }}%</strong></p>
+        </div>
+
+        <div class="card">
+            <h3>Registered Users</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Date Joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.date_joined }}</td>
+                            <td><a href="{% url 'delete_user' user.id %}">Delete</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3">No users found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.querySelector('.toggle-sidebar');
+            
+            sidebar.classList.toggle('sidebar-collapsed');
+            mainContent.classList.toggle('main-content-expanded');
+            toggleBtn.classList.toggle('toggle-sidebar-collapsed');
+            
+            // Change button icon
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                toggleBtn.textContent = '☰';
+            } else {
+                toggleBtn.textContent = '✕';
+            }
+        }
+    </script>
+</body>
+</html>

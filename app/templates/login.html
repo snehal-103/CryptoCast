@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Login{%endblock title %}
+
+{% load crispy_forms_tags %}
+{% block body %}
+<style>
+	body {
+	  font-family: Arial, Helvetica, sans-serif;
+	  background-color: black;
+	}
+	
+	* {
+	  box-sizing: border-box;
+	}
+	
+	.container {
+	  padding: 16px;
+	  background-color: white;
+	}
+	
+	input[type=text], input[type=password] {
+	  width: 50%;
+	  padding: 15px;
+	  margin: 5px 0 22px 0;
+	  display: inline-block;
+	  border: none;
+	  background: #f1f1f1;
+	}
+	
+	input[type=text]:focus, input[type=password]:focus {
+	  background-color: #ddd;
+	  outline: none;
+	}
+	
+	hr {
+	  border: 1px solid #f1f1f1;
+	  margin-bottom: 25px;
+	}
+	
+	.button {
+	  background-color: #04AA6D;
+	  color: white;
+	  padding: 16px 20px;
+	  margin: 8px 0;
+	  border: none;
+	  cursor: pointer;
+	  width: 20%;
+	  opacity: 0.9;
+	}
+	
+	.button:hover {
+	  opacity: 1;
+	}
+	
+	a {
+	  color: dodgerblue;
+	}
+	
+	.signin {
+	  background-color: #f1f1f1;
+	  text-align: center;
+	}
+</style>
+
+<!--Login--> 
+<div class="container py-5">
+  <center><h1>Login User</h1></center><br><br><br>
+
+  <form action="/clicklogin/" method="post">
+    {% csrf_token %}
+    <center>   
+      <div class="container">
+        <div>
+          <label for="username"><b>Username: </b></label>
+          <input type="text" placeholder="Enter Username" name="username" required>
+        </div>
+        <div>
+          <label for="password"><b>Password: </b></label>
+          <input type="password" placeholder="Enter Password" name="password" required>
+        </div>
+
+        <!-- 🟡 Role selection dropdown -->
+        <div>
+          <label for="role"><b>Login As: </b></label>
+          <select name="role" required style="width: 50%; padding: 15px; background: #f1f1f1; border: none;">
+            <option value="" disabled selected>Select role</option>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div>    
+          <input type="Submit" class="button" value="Log In"><br>
+          <a href="/register_user" class="signin">Register User</a>
+        </div>
+
+        {% if messages %}
+  {% for message in messages %}
+    <p style="color: red;">{{ message }}</p>
+  {% endfor %}
+{% endif %}
+      </div>
+    </center>   
+  </form>
+</div>
+
+{% endblock %}
