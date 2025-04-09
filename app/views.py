@@ -482,7 +482,7 @@ def delete_user(request, user_id):
     return redirect('admin_dashboard')
 
 
-from newsapi import NewsApiClient  # Add this import at the top
+from newsapi.newsapi_client import NewsApiClient
 
 def news(request):
     try:
