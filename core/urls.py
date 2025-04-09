@@ -34,5 +34,7 @@ urlpatterns = [
     path('click_user/', ClickRegister),
     path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('active/', views.active_crypto, name='active_crypto'),
+
 
 ]

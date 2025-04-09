@@ -519,3 +519,12 @@ def delete_user(request, user_id):
         user = User.objects.get(id=user_id)
         user.delete()
     return redirect('admin_dashboard')
+
+
+def active_crypto(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    # Fetch active crypto data
+    data = get_active_crypto_data()  # Replace with your actual function
+    return render(request, 'active_crypto.html', {'data': data})
