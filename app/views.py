@@ -54,14 +54,25 @@ def index(request):
     ticker_list = ticker_df.to_dict('records')
 
     btc_data = yf.download("BTC-CAD", period="1mo", interval="1d")
+
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=btc_data.index, y=btc_data['Close'], name="BTC-CAD"))
+
+    current_price = None
+    if not btc_data.empty and 'Close' in btc_data.columns:
+        fig.add_trace(go.Scatter(x=btc_data.index, y=btc_data['Close'], name="BTC-CAD"))
+        current_price = btc_data['Close'].iloc[-1]
+    else:
+        fig.add_annotation(text="BTC-CAD data not available",
+                           xref="paper", yref="paper",
+                           x=0.5, y=0.5, showarrow=False,
+                           font=dict(size=18))
 
     return render(request, 'index.html', {
         'ticker_list': ticker_list,
         'plot': fig.to_html(),
-        'current_price': btc_data['Close'].iloc[-1]
+        'current_price': current_price
     })
+
 
 def search(request):
     return render(request, 'search.html')
@@ -75,6 +86,33 @@ def ticker(request):
         'ticker_list': ticker_list
     })
 
+
+def get_recent_price_data(ticker_symbol):
+    crypto = yf.Ticker(ticker_symbol)
+    hist = crypto.history(period="1d", interval="15m")  # past 7 days, hourly
+    return hist
+
+import plotly.graph_objects as go
+
+def create_recent_price_plot(hist_df, ticker_symbol):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=hist_df.index,
+        y=hist_df['Close'],
+        mode='lines',
+        name='Close Price',
+        line=dict(color='deepskyblue', width=2)
+
+    ))
+
+    fig.update_layout(
+        title=f'Live Price Evolution of {ticker_symbol}',
+        xaxis_title='Time',
+        yaxis_title='Price (USD)',
+        template='plotly_dark',
+        )
+
+    return fig.to_html(full_html=False)
 
 def predict(request, ticker_value, number_of_days):
     try:
@@ -244,7 +282,10 @@ def predict(request, ticker_value, number_of_days):
 
     recent_data = get_recent_price_data(ticker_value)
     plot_div_live = create_recent_price_plot(recent_data, ticker_value)
-    live_price = recent_data["Close"].iloc[-1]  # Gets the latest live price
+    try:
+       live_price = recent_data["Close"].iloc[-1]
+    except:
+       live_price = None
     predicted_price = forecast[-1]  # or use the appropriate variable
 
     
@@ -472,31 +513,3 @@ def delete_user(request, user_id):
         user = User.objects.get(id=user_id)
         user.delete()
     return redirect('admin_dashboard')
-
-
-def get_recent_price_data(ticker_symbol):
-    crypto = yf.Ticker(ticker_symbol)
-    hist = crypto.history(period="1d", interval="15m")  # past 7 days, hourly
-    return hist
-
-import plotly.graph_objects as go
-
-def create_recent_price_plot(hist_df, ticker_symbol):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=hist_df.index,
-        y=hist_df['Close'],
-        mode='lines',
-        name='Close Price',
-        line=dict(color='deepskyblue', width=2)
-
-    ))
-
-    fig.update_layout(
-        title=f'Live Price Evolution of {ticker_symbol}',
-        xaxis_title='Time',
-        yaxis_title='Price (USD)',
-        template='plotly_dark',
-        )
-
-    return fig.to_html(full_html=False)
