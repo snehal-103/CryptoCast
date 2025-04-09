@@ -100,68 +100,65 @@
 
 
             <!-- Sales Chart Start -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="row g-4">
-                    <div class="col-sm-12 col-xl-12">
-                        <div class="bg-secondary text-center rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0 text-light">Active CryptoCurrency Market</h6>
-                                <a href="{% url 'active_crypto' %}">Show All</a>
-                            {% block Left_Plot %}
-
-                                {% autoescape off %}
-                                    {{ plot_div_left }}
-                                {% endautoescape %}
-
-                            {% endblock Left_Plot %}
-                        </div>
-                    </div>
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-secondary text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0 text-light">24h Trading Volume (Buy/Sell Pressure)</h6>
+                    <a href="https://coinmarketcap.com/" class="text-light">View More</a>
                 </div>
+                {% if plot_div_left %}
+                    {% autoescape off %}
+                        {{ plot_div_left }}  <!-- This now shows VOLUME BARS -->
+                    {% endautoescape %}
+                {% else %}
+                    <p class="text-light">No volume data available.</p>
+                {% endif %}
             </div>
-            <!-- Sales Chart End -->
-
-
-            <!-- Recent Sales Start -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="text-center rounded p-4" style="background-color: #4F80E2;">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0 text-light">Recent CryptoCurrency Market</h6>
-                        <a href="https://finance.yahoo.com/trending-tickers" class="text-light">Show All</a>
-                    </div>
-                    <div class="table-responsive text-light">
-                        <table class="table text-start align-middle table-bordered table-hover mb-0">
-                            <thead>
-                                <tr class="text-white">
-                                    <th scope="col">Ticker</th>
-                                    <th scope="col">Open</th>
-                                    <th scope="col">High</th>
-                                    <th scope="col">Low</th>
-                                    <th scope="col">Close</th>
-                                    <th scope="col">Adj. Close</th>
-                                    <th scope="col">Volume</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-light">
-                                {% if recent_stocks %}
-                                {% for i in recent_stocks %}
-                                <tr>
-                                    <td>{{i.Ticker}}</td>
-                                    <td>{{i.Open}}</td>
-                                    <td>{{i.High}}</td>
-                                    <td>{{i.Low}}</td>
-                                    <td>{{i.Close}}</td>
-                                    <td>{{i.Adj_Close}}</td>
-                                    <td>{{i.Volume}}</td>
-                                </tr>
-                                {% endfor %}
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <!-- Recent Sales End -->
-
+        </div>
+    </div>
+</div>
+<!-- Sales Chart End -->
+ 
+<!-- Recent Sales Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="text-center rounded p-4" style="background-color: #4F80E2">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0 text-light">Recent Crypto Market Data</h6>
+            <a href="/ticker" class="text-light">Show All</a>
+        </div>
+        <div class="table-responsive text-light">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-white">
+                        <th scope="col">Ticker</th>
+                        <th scope="col">Price (USD)</th>
+                        <th scope="col">Market Cap</th>
+                        <th scope="col">24h Volume</th>
+                    </tr>
+                </thead>
+                <tbody class="text-light">
+                    {% if crypto_data %}
+                        {% for crypto in crypto_data|slice:":5" %}
+                        <tr>
+                            <td>{{ crypto.symbol }}</td>
+                            <td>${{ crypto.price }}</td>
+                            <td>${{ crypto.market_cap|default:"N/A" }}</td>
+                            <td>${{ crypto.volume|default:"N/A" }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">No data available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Recent Sales End -->
 
             <!-- Footer Start -->
             <div class="container-fluid pt-4 px-4 text-light">

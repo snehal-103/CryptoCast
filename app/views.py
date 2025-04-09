@@ -49,36 +49,61 @@ def index1(request):
     return render(request, 'index.html')
 
 def index(request):
-    ticker = 'BTC-USD'
     try:
-        btc_data = yf.download(ticker, period='1d', interval='1m')
+        # Top cryptocurrencies (adjust as needed)
+        crypto_tickers = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'DOGE-USD']
+        crypto_data = []
+        
+        for ticker in crypto_tickers:
+            data = yf.Ticker(ticker)
+            hist = data.history(period="1d", interval="1h")  # Last 24h data
+            
+            if not hist.empty:
+                latest = hist.iloc[-1]
+                crypto_data.append({
+                    'symbol': ticker,
+                    'price': round(latest['Close'], 2),
+                    'volume': round(latest['Volume'], 2),  # Trading volume (buy/sell pressure)
+                    'market_cap': data.info.get('marketCap', 'N/A'),
+                })
 
-        if btc_data.empty:
-            context = {
-                'error': 'Unable to fetch live BTC data at the moment. Please try again later.',
-                'current_price': 'N/A',
-                'last_updated': 'N/A'
-            }
-        else:
-            current_price = btc_data['Close'].iloc[-1]
-            last_updated = btc_data.index[-1].strftime('%Y-%m-%d %H:%M:%S')
+        # Generate VOLUME BAR CHART (instead of price trend)
+        fig = go.Figure()
+        
+        # Add bars for each crypto's 24h volume
+        for crypto in crypto_data:
+            fig.add_trace(go.Bar(
+                x=[crypto['symbol']],
+                y=[crypto['volume']],
+                name=crypto['symbol'],
+                marker_color='#3E54D3'  # Match your theme
+            ))
 
-            context = {
-                'current_price': f"${current_price:.2f}",
-                'last_updated': last_updated,
-            }
+        fig.update_layout(
+            title='24h Trading Volume (Buy/Sell Activity)',
+            xaxis_title='Cryptocurrency',
+            yaxis_title='Volume (USD)',
+            template='plotly_dark',
+            showlegend=False,
+        )
+        volume_chart = fig.to_html(full_html=False)
+
+        context = {
+            'crypto_data': crypto_data,
+            'plot_div_left': volume_chart,  # Now shows volume bars
+            'recent_stocks': crypto_data[:5]  # Recent data for table
+        }
 
     except Exception as e:
-        print("Error in index view:", e)
+        print(f"Error fetching data: {e}")
         context = {
-            'error': 'Something went wrong while fetching data.',
-            'current_price': 'N/A',
-            'last_updated': 'N/A'
+            'error': 'Failed to fetch market data.',
+            'crypto_data': [],
+            'plot_div_left': '<p class="text-light">No volume data available.</p>',
+            'recent_stocks': []
         }
 
     return render(request, 'index.html', context)
-
-
 
 def search(request):
     return render(request, 'search.html')
@@ -144,67 +169,7 @@ def predict(request, ticker_value, number_of_days):
 
     if number_of_days > 365:
         return render(request, 'Overflow_days.html', {})
-    """
-    # ------ Candlestick chart (Live data) ------
-    try:
-        df = yf.download(tickers=ticker_value, period='10d', interval='1h')
-        if df.empty or len(df) < 2:
-            raise ValueError("Insufficient data for candlestick chart.")
-        fig = go.Figure()
-        
-        # Add candlestick
-        fig.add_trace(go.Candlestick(
-            x=df.index,
-            open=df['Open'],
-            high=df['High'],
-            low=df['Low'],
-            close=df['Close'],
-            name='Market Data',
-            increasing_line_color='lime',
-            decreasing_line_color='red',
-            increasing_fillcolor='lime',
-            decreasing_fillcolor='red'
-            ))
-        # Add close price line for visibility
-        fig.add_trace(go.Scatter(
-            x=df.index,
-            y=df['Close'],
-            mode='lines',
-            name='Close Price',
-            line=dict(color='deepskyblue', width=1)
-            ))
-
-        fig.update_layout(
-            title=f'{ticker_value} Live Price Evolution',
-            yaxis_title='Price (USD)',
-            paper_bgcolor="#14151b",
-            plot_bgcolor="#14151b",
-            font_color="white"
-        )
-        
-        fig.update_yaxes(gridcolor="gray")
-        fig.update_xaxes(gridcolor="gray")
-        
-        fig.update_xaxes(
-            rangeslider_visible=True,
-            rangeselector=dict(
-                buttons=list([
-                    dict(count=15, label="15m", step="minute", stepmode="backward"),
-                    dict(count=45, label="45m", step="minute", stepmode="backward"),
-                    dict(count=1, label="HTD", step="hour", stepmode="todate"),
-                    dict(count=3, label="3h", step="hour", stepmode="backward"),
-                    dict(step="all")
-                ])
-            )
-        )
-        plot_div = plot(fig, auto_open=False, output_type='div')
-    except Exception as e:
-        plot_div = "<p style='color:white;'>Unable to load live price graph. Please try again later.</p>"
-        
-        print("-----------PLOT DIV START-------------")
-        print(plot_div[:1000])  # print just first 1000 characters to avoid full clutter
-        print("-----------PLOT DIV END-------------")
-    """
+    
 
     # ------ ML Model Prediction ------
     try:
@@ -386,10 +351,6 @@ def HomePage(request):
 
     return render(request, 'home.html', {'live_prices': live_prices})
 
-
-def news(request):
-    return render(request, "news.html")
-
 @csrf_exempt
 def clicklogin(request):
     if request.method != "POST":
@@ -521,10 +482,36 @@ def delete_user(request, user_id):
     return redirect('admin_dashboard')
 
 
-def active_crypto(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
+from newsapi import NewsApiClient  # Add this import at the top
 
-    # Fetch active crypto data
-    data = get_active_crypto_data()  # Replace with your actual function
-    return render(request, 'active_crypto.html', {'data': data})
+def news(request):
+    try:
+        # Initialize NewsAPI client (replace 'YOUR_API_KEY' with your actual key)
+        newsapi = NewsApiClient(api_key='55bc17cd7e7d471f9da07657dfd8813d')
+        
+        # Fetch top crypto news
+        crypto_news = newsapi.get_everything(
+            q='bitcoin OR ethereum OR cryptocurrency',
+            language='en',
+            sort_by='publishedAt',
+            page_size=10  # Show 10 articles
+        )
+        
+        # Extract relevant data
+        articles = crypto_news.get('articles', [])
+        
+        # Add to context
+        context = {
+            'articles': articles,
+            'news_error': None
+        }
+        
+    except Exception as e:
+        print(f"NewsAPI Error: {e}")
+        context = {
+            'articles': [],
+            'news_error': "Failed to load news. Please try again later."
+        }
+    
+    return render(request, 'news.html', context)
+

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center text-light">🔥 Active Cryptocurrency Market</h2>
+    <table class="table table-dark table-hover table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Price (USD)</th>
+                <th>24h Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if crypto_data %}
+                {% for coin in crypto_data %}
+                <tr>
+                    <td>{{ coin.symbol }}</td>
+                    <td>{{ coin.name }}</td>
+                    <td>${{ coin.price }}</td>
+                    <td>{{ coin.volume|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4">Unable to fetch live prices at the moment.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

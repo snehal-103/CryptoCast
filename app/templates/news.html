@@ -1,46 +1,94 @@
 {% extends "base1.html" %}
 {% block body %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Embedded YouTube Video</title>
-  <style>
-    /* Optional: Add some styling to the video container */
-    .video-container {
-      position: relative;
-      width: 100%;
-      height: 0;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    }
-
-    .video-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-    
-  </style>
-</head>
-<body>
-
-  <!-- Replace 'YOUR_EMBED_CODE' with the copied iframe code from YouTube -->
-  <div class="video-container">
-   <iframe width="560" height="315" src="https://www.youtube.com/embed/JbK1c0OyUaA?si=SkCj8t6Tlf1q6wuH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-  </div>
-
-  <div style= color:white>
-        <h2 >Latest News Links</h2>
-        <p>Check out the latest news on this link:</p>
-        <a href="https://economictimes.indiatimes.com/news/bitcoin" target="_blank"style= color:white>Watch Now</a>
+<div class="container mt-4">
+    <!-- YouTube Video Section -->
+    <div class="video-container mb-5">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/JbK1c0OyUaA?si=SkCj8t6Tlf1q6wuH" 
+                title="YouTube video player" frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+        </iframe>
     </div>
 
-</body>
-</html>
+    <!-- News Articles Section -->
+    <div class="news-section text-white">
+        <h2 class="mb-4">Latest Cryptocurrency News</h2>
+        
+        {% if news_error %}
+            <div class="alert alert-warning">
+                {{ news_error }}
+            </div>
+        {% endif %}
 
+        {% if articles %}
+            <div class="row">
+                {% for article in articles %}
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-dark border-light">
+                        {% if article.urlToImage %}
+                        <img src="{{ article.urlToImage }}" class="card-img-top" alt="{{ article.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <p class="card-text text-muted">
+                                {{ article.description|truncatewords:30 }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ article.source.name }} | {{ article.publishedAt|date:"M d, Y" }}</small>
+                                <a href="{{ article.url }}" target="_blank" class="btn btn-sm btn-primary">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No news articles found.</p>
+        {% endif %}
+    </div>
+   
+  <!--LINK-->
+  <div style= color:white>
+    <h2 >Latest News Links</h2>
+    <p>Check out the latest news on this link:</p>
+    <a href="https://economictimes.indiatimes.com/news/bitcoin" target="_blank"style= color:white>Watch Now</a>
+</div> 
+</div>
+
+<style>
+    /* Video container styling */
+    .video-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        margin-bottom: 2rem;
+    }
+    
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    /* News card styling */
+    .card {
+        transition: transform 0.3s;
+        height: 100%;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+</style>
 
 {% endblock %}
