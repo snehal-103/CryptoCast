@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cryptocast
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn core.wsgi:application
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: django-insecure-d*2eog&xs-3+50xd0c(i+636^(fs38*si4df68-fn80%kf#+%%
+        value: your-secret-key-here
+      - key: ALLOWED_HOSTS
+        value: 0.0.0.0
