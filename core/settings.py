@@ -159,3 +159,4 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 ALLOWED_HOSTS = ['*']  # or add your Render URL once available
 
 CSRF_TRUSTED_ORIGINS = ['https://your-app-name.onrender.com']
+
