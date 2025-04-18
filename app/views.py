@@ -482,11 +482,11 @@ def delete_user(request, user_id):
     return redirect('admin_dashboard')
 
 
-from newsapi import NewsApiClient  # Add this import at the top
+from newsapi import NewsApiClient  
 
 def news(request):
     try:
-        # Initialize NewsAPI client (replace 'YOUR_API_KEY' with your actual key)
+        # Initialize NewsAPI client 
         newsapi = NewsApiClient(api_key='55bc17cd7e7d471f9da07657dfd8813d')
         
         # Fetch top crypto news
