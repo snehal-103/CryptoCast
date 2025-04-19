@@ -22,9 +22,9 @@ urlpatterns = [
     path('', include('app.urls')),  # Default home handled by views.home
     path('index1/', index1),
     path('index/', index),
-    path('search/', search),
+    path('search/', views.search, name='search'),
     path('predict/<str:ticker_value>/<str:number_of_days>/', predict),
-    path('ticker/', ticker),
+    path('ticker/', ticker, name='ticker'),
     path('loginuser/', LoginUser),
     path('homepage/', HomePage),
     path('news/', news),
